@@ -3309,6 +3309,7 @@
             <condition>HAS_DX</condition>
             <condition>HAS_MEDIACODEC</condition>
             <condition>HAVE_WEBOS</condition>
+            <condition>HAVE_AMCODEC</condition>
           </or>
         </requirement>
         <dependencies>
@@ -3317,6 +3318,7 @@
             <or>
               <condition on="property" name="hassystemsdrpeakluminance" operator="!is" />
               <condition setting="videoscreen.usesystemsdrpeakluminance" operator="is">false</condition>
+              <condition>HAVE_AMCODEC</condition>
             </or>
           </dependency>
         </dependencies>
