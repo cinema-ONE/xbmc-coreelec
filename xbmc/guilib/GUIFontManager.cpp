@@ -461,7 +461,10 @@ void GUIFontManager::LoadFonts(const std::string& fontSet)
   // Try to load the fontset from Font.xml
   const std::string fontsetFilePath = skin->GetSkinPath("Font.xml", &m_skinResolution);
   if (LoadFontsFromFile(fontsetFilePath, fontSet, firstFontset))
+  {
+    LoadAddonFonts(fontSet);
     return;
+  }
 
   // If we got here, then the requested fontset was not found in the skin's Font.xml file
   // Look at additional fontsets that are defined in .xml files in the skin's fonts directory
@@ -470,7 +473,10 @@ void GUIFontManager::LoadFonts(const std::string& fontSet)
                            ".xml", DIR_FLAG_BYPASS_CACHE);
   for (int i = 0; i < xmlFileItems.Size(); i++)
     if (LoadFontsFromFile(xmlFileItems[i]->GetPath(), fontSet, firstFontset))
+    {
+      LoadAddonFonts(fontSet);
       return;
+    }
 
   // Requested fontset was not found, try the first
   if (!firstFontset.empty())
@@ -484,6 +490,27 @@ void GUIFontManager::LoadFonts(const std::string& fontSet)
   else
     CLog::LogF(LOGERROR, "No valid <fontset> found in '{}' or in xml files in fonts directory",
                fontsetFilePath);
+}
+
+void GUIFontManager::LoadAddonFonts(const std::string& fontSet)
+{
+  // GetAddons(addons, type) only ever returns enabled add-ons (OnlyEnabled::CHOICE_YES) -
+  // a disabled RESOURCE_FONT add-on's fonts are never considered.
+  VECADDONS addons;
+  CServiceBroker::GetAddonMgr().GetAddons(addons, AddonType::RESOURCE_FONT);
+  for (const auto& addon : addons)
+  {
+    const auto fontResource = std::static_pointer_cast<CFontResource>(addon);
+    const std::string addonFontsetFilePath =
+        CSpecialProtocol::TranslatePathConvertCase(fontResource->Path() + "/resources/Font.xml");
+    if (!CFileUtils::Exists(addonFontsetFilePath))
+      continue;
+
+    std::string unusedFirstFontset;
+    CLog::LogF(LOGINFO, "Merging in fonts declared by add-on '{}' from '{}'", addon->ID(),
+               addonFontsetFilePath);
+    LoadFontsFromFile(addonFontsetFilePath, fontSet, unusedFirstFontset);
+  }
 }
 
 void GUIFontManager::LoadFonts(const TiXmlNode* fontNode)

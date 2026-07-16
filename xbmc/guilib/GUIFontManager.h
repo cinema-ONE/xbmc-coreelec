@@ -130,6 +130,13 @@ private:
   bool LoadFontsFromFile(const std::string& fontsetFilePath,
                          const std::string& fontSet,
                          std::string& firstFontset);
+  //! \brief Merges in font name/size declarations from enabled RESOURCE_FONT
+  //!        add-ons that ship their own "resources/Font.xml" - additive only,
+  //!        since LoadTTF() already returns the existing CGUIFont without
+  //!        creating a duplicate for any name the skin's own Font.xml already
+  //!        defined, add-ons can only add new font names, never override the
+  //!        active skin's own.
+  void LoadAddonFonts(const std::string& fontSet);
 
   mutable CCriticalSection m_critSection;
   std::vector<FontMetadata> m_userFontsCache;
