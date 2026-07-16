@@ -206,5 +206,13 @@ bool CImageDecoder::Decode(unsigned char* const pixels,
   m_width = width;
   m_height = height;
 
+  // Unlike CFFmpegImage (which inspects the decoded AVPixFmtDescriptor for
+  // AV_PIX_FMT_FLAG_ALPHA), this generic addon wrapper never set m_hasAlpha at
+  // all, so every kodi.imagedecoder addon's output was always treated as fully
+  // opaque - the two addon-facing formats that actually carry a per-pixel alpha
+  // channel are the only ones affected.
+  if (result)
+    m_hasAlpha = (addonFmt == ADDON_IMG_FMT_A8R8G8B8 || addonFmt == ADDON_IMG_FMT_RGBA8);
+
   return result;
 }
