@@ -383,6 +383,9 @@ bool CWinSystemAmlogic::DestroyWindow()
 
 void CWinSystemAmlogic::RefreshResolutions()
 {
+  m_hdr_caps = {};
+  m_hdr_caps_read = false;
+
   RESOLUTION_INFO resDesktop, curDisplay;
   std::vector<RESOLUTION_INFO> resolutions;
 
@@ -430,9 +433,16 @@ void CWinSystemAmlogic::UpdateResolutions()
 
 bool CWinSystemAmlogic::IsHDRDisplay()
 {
+  if (m_hdr_caps_read)
+    return (m_hdr_caps.SupportsHDR10() | m_hdr_caps.SupportsHDR10Plus() |
+            m_hdr_caps.SupportsHLG() |
+            (m_hdr_caps.SupportsDolbyVision() != DolbyVisionFormat::DOLBYVISION_TYPE_NONE));
+
   CSysfsPath hdr_cap{"/sys/class/amhdmitx/amhdmitx0/hdr_cap"};
   CSysfsPath dv_cap{"/sys/class/amhdmitx/amhdmitx0/dv_cap"};
   std::string valstr;
+
+  m_hdr_caps_read = true;
 
   if (hdr_cap.Exists())
   {
