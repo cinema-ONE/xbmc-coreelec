@@ -248,6 +248,11 @@ void CRenderer::Render(int idx, float depth)
     if (!o)
       continue;
 
+    // COverlay is texture-cached, so refresh per frame, not in Convert().
+    o->m_3dSubtitleDepth = e.overlay_dvd->m_3dSubtitleDepth;
+    o->m_3dSubtitleDepthAuthored = e.overlay_dvd->m_3dSubtitleDepthAuthored;
+    o->m_pgsSubtitle = e.overlay_dvd->IsPgsSubtitle();
+
     SRenderItem item;
     GetRenderState(o.get(), item.state);
     item.overlay = std::move(o);
@@ -362,7 +367,8 @@ void CRenderer::GetRenderState(COverlay* o, SRenderState& state) const
     state.y += lowerHalf ? before.y2 - after.y2 : before.y1 - after.y1;
   }
 
-  state.x += GetStereoscopicDepth(o->m_pgsSubtitle, o->m_3dSubtitleDepth);
+  state.x += GetStereoscopicDepth(o->m_pgsSubtitle, o->m_3dSubtitleDepth,
+                                  o->m_3dSubtitleDepthAuthored);
 }
 
 CRect CRenderer::GetContentRect(const COverlay& o, const SRenderState& state)
