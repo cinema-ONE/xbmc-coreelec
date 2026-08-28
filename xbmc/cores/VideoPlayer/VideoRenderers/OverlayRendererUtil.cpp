@@ -17,6 +17,9 @@
 #include "windowing/GraphicContext.h"
 #include "windowing/WinSystem.h"
 
+#include <cmath>
+
+
 namespace OVERLAY
 {
 
@@ -272,7 +275,7 @@ bool convert_quad(ASS_Image* images, SQuads& quads, int max_x)
   return true;
 }
 
-int GetStereoscopicDepth(bool isPgs, int subtitleDepth)
+int GetStereoscopicDepth(bool isPgs, int subtitleDepth, bool authoredDepth)
 {
   auto stereo_mode = CServiceBroker::GetWinSystem()->GetGfxContext().GetStereoMode();
 
@@ -283,13 +286,22 @@ int GetStereoscopicDepth(bool isPgs, int subtitleDepth)
     return 0;
   }
 
-  // get configured depth
-  int depth = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_STEREOSCOPICDEPTH);
+  const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
-  // in case of MVC playback and PGS subtitles, use the subtitle depth info additionally to the configured one
-  if(stereo_mode == RenderStereoMode::HARDWAREBASED && isPgs)
+  int depth;
+  if (isPgs && authoredDepth)
   {
-    depth += subtitleDepth;
+    // Any stereo mode: the decoder also repacks MVC to SBS/TAB in hardware.
+    // The fixed setting is not added as well - it is the fallback for discs
+    // that author nothing, and both would double-count. Offsets are relative
+    // to a 1920 wide plane.
+    const float scale = CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth() / 1920.0f;
+    depth = static_cast<int>(std::lround(subtitleDepth * scale)) +
+            settings->GetInt(CSettings::SETTING_SUBTITLES_STEREOSCOPICDEPTHADJUST);
+  }
+  else
+  {
+    depth = settings->GetInt(CSettings::SETTING_SUBTITLES_STEREOSCOPICDEPTH);
   }
 
   // correct depth according to the current left/right eye view
