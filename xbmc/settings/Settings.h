@@ -166,6 +166,8 @@ public:
   static constexpr auto SETTING_SUBTITLES_CAPTIONSIMPAIRED = "subtitles.captionsimpaired";
   static constexpr auto SETTING_SUBTITLES_ALIGN = "subtitles.align";
   static constexpr auto SETTING_SUBTITLES_STEREOSCOPICDEPTH = "subtitles.stereoscopicdepth";
+  static constexpr auto SETTING_SUBTITLES_STEREOSCOPICDEPTHADJUST =
+      "subtitles.stereoscopicdepthadjust";
   static constexpr auto SETTING_SUBTITLES_FONTNAME = "subtitles.fontname";
   static constexpr auto SETTING_SUBTITLES_FONTSIZE = "subtitles.fontsize";
   static constexpr auto SETTING_SUBTITLES_STYLE = "subtitles.style";

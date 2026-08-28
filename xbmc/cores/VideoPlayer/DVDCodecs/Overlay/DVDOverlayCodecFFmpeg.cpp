@@ -289,6 +289,8 @@ std::shared_ptr<CDVDOverlay> CDVDOverlayCodecFFmpeg::GetOverlay()
     overlay->SetBitmapSubtitle(codecId == AV_CODEC_ID_HDMV_PGS_SUBTITLE ||
                                codecId == AV_CODEC_ID_DVD_SUBTITLE);
 
+    overlay->SetPgsSubtitle(codecId == AV_CODEC_ID_HDMV_PGS_SUBTITLE);
+
     uint8_t* s = rect.data[0];
     uint8_t* t = overlay->pixels.data();
 
