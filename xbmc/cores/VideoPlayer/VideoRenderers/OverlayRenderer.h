@@ -105,6 +105,7 @@ namespace OVERLAY {
     float m_source_height{0}; // Video source height resolution used to calculate aspect ratio
 
     int m_3dSubtitleDepth{0};
+    bool m_3dSubtitleDepthAuthored{false};
     bool m_pgsSubtitle{false};
 
     // True only for a picture of subtitle text (PGS, VobSub). Menu graphics

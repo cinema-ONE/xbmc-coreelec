@@ -45,6 +45,6 @@ void convert_rgba(const CDVDOverlaySpu& o,
                   int& max_y,
                   std::vector<uint32_t>& rgba);
 bool convert_quad(ASS_Image* images, SQuads& quads, int max_x);
-int GetStereoscopicDepth(bool isPgs, int subtitleDepth);
+int GetStereoscopicDepth(bool isPgs, int subtitleDepth, bool authoredDepth);
 
 } // namespace OVERLAY
